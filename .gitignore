@@ -1,0 +1,14 @@
+node_modules/
+dist/
+dist-server/
+.env
+.env.*
+!.env.example
+*.log
+android/.gradle/
+android/local.properties
+android/**/build/
+*.jks
+*.keystore
+test-results/
+.tools/

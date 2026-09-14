@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: brainrivals-beta
+    runtime: node
+    plan: free
+    numInstances: 1
+    buildCommand: npm ci --include=dev && npm test && npm run build:render
+    startCommand: npm start
+    healthCheckPath: /health
+    autoDeployTrigger: off
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      - key: NODE_ENV
+        value: production
+      - key: SERVE_WEB
+        value: "1"
+      - key: MAX_ROOMS
+        value: "100"
+      - key: ALLOWED_ORIGINS
+        value: https://localhost,http://localhost,capacitor://localhost

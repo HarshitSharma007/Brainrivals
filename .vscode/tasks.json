@@ -1,0 +1,51 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "BrainRivals: play locally",
+			"type": "shell",
+			"command": "$env:Path = 'C:\\Program Files\\nodejs;' + $env:Path; & 'C:\\Program Files\\nodejs\\npm.cmd' run dev",
+			"isBackground": true,
+			"options": { "cwd": "${workspaceFolder}" },
+			"problemMatcher": [],
+			"group": "build"
+		},
+		{
+			"label": "BrainRivals: build web",
+			"type": "npm",
+			"script": "build",
+			"group": { "kind": "build", "isDefault": true },
+			"problemMatcher": ["$tsc"]
+		},
+		{
+			"label": "BrainRivals: test",
+			"type": "npm",
+			"script": "test",
+			"group": "test",
+			"problemMatcher": []
+		},
+		{
+			"label": "BrainRivals: install local Android tools",
+			"type": "shell",
+			"command": "${workspaceFolder}\\scripts\\setup-android.ps1",
+			"options": { "cwd": "${workspaceFolder}" },
+			"problemMatcher": []
+		},
+		{
+			"label": "BrainRivals: check Android tools",
+			"type": "shell",
+			"command": "${workspaceFolder}\\scripts\\android.ps1",
+			"args": ["-Check"],
+			"options": { "cwd": "${workspaceFolder}" },
+			"problemMatcher": []
+		},
+		{
+			"label": "BrainRivals: build Android debug APK",
+			"type": "shell",
+			"command": "${workspaceFolder}\\scripts\\android.ps1",
+			"options": { "cwd": "${workspaceFolder}" },
+			"group": "build",
+			"problemMatcher": []
+		}
+	]
+}
