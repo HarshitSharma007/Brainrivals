@@ -1,5 +1,7 @@
 # BrainRivals
 
+Hi
+
 **Think fast. Play together.** An Android-first, four-choice quiz game for friendly rivalry—not an IQ test.
 
 React 19 · TypeScript 5.8 · Vite 6 · Capacitor 7 · Node.js / Socket.IO 4
