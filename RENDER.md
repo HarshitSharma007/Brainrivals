@@ -1,8 +1,10 @@
 # BrainRivals on Render Free
 
-**Status: prepared and tested locally on 2026-09-15; not deployed.** The user created the private repository [HarshitSharma007/Brainrivals](https://github.com/HarshitSharma007/Brainrivals) and reports that Render email verification is complete. Local branch `main` points to that repository through `origin`; the initial source snapshot has been reviewed for excluded paths and common secret patterns.
+**Status: source published; first Render deployment failed during tests on 2026-09-15.** The user made [HarshitSharma007/Brainrivals](https://github.com/HarshitSharma007/Brainrivals) public. The source and original GitHub README history were merged and pushed as `46438a4` without force-pushing. The user has created a Render service; no successful public deployment is confirmed yet.
 
-The initial commit/push is authorized. Repository-local author settings use the verified GitHub account name and its ID-based private noreply address. At the latest access check, Git could not authenticate to the private repository, and Render's shared browser tab required sign-in. No upload or Render service is claimed. Complete authentication directly in the browser; do not send passwords, tokens, or verification links in chat. Inspect existing remote branches before pushing and do not force-push over existing content.
+The reported error was `Build the web app before starting with SERVE_WEB=1.` during online tests, before the web build. The room fixtures now explicitly disable static hosting; static-file tests supply their own temporary web build. Production startup still honors `SERVE_WEB=1` and rejects a missing build. Keep the existing test-before-build command and deploy the corrected commit. Complete any account authentication directly in your browser; do not send passwords, tokens, or verification links in chat.
+
+**Fix validation (2026-09-15):** all **48 tests passed** from an empty working directory with `SERVE_WEB=1`, `NODE_ENV=production`, and the Render-style port/origin/room-cap variables, using the existing installed dependencies. `npm run build:render` then passed strict TypeScript, Vite/PWA, and backend compilation. A separate clean install with an empty npm cache was blocked by repeated `ERR_SSL_SSL/TLS_ALERT_HANDSHAKE_FAILURE` downloads from public npm on this machine and was stopped; clean network installation is not claimed as verified. No TLS security settings were weakened. Lockfile versions and integrity hashes were checked unchanged after mirror URL normalization. This follow-up fix has not yet been committed or pushed; publish it before selecting **Manual Deploy → Deploy latest commit** on the existing Free service.
 
 ## What gets hosted
 
@@ -92,9 +94,12 @@ According to [Render's free-service documentation](https://render.com/docs/free)
 
 `npm run build:render` generates `dist/` and `dist-server/index.js`. `npm start` runs plain Node, not a development watcher; `tsx` is not needed at runtime. `npm ci --include=dev` is intentional because compilation needs development dependencies even with production environment variables.
 
+Tests must also pass on a fresh checkout with `SERVE_WEB=1` and no `dist/` directory. Integration fixtures use `staticDir: false` for room-only servers; hosting tests use a temporary directory. A regression test verifies both that override and the unchanged production missing-build guard. [.npmrc](.npmrc) and the lockfile use public npm tarballs, with no self-referential `brainrivals: file:` dependency.
+
 Locally, set `SERVE_WEB=1`, an unused `PORT`, and `PUBLIC_ORIGIN` to that local origin before `npm start`. No Render credentials are needed for this smoke test.
 
 - **Homepage 404:** check `SERVE_WEB=1`, successful `build:render`, and repository-root settings.
+- **Tests fail with "Build the web app before starting with SERVE_WEB=1":** deploy the test-isolation fix. Do not disable production web serving or remove tests from the build command. The same message from `npm start` still means the production web build is missing.
 - **Room connection rejected:** use the correct HTTPS origin and verify native/custom-domain origins. Never fix this with a blanket `*` origin.
 - **Room disappeared:** a restart, redeploy, disconnect, or 15-minute lobby expiration invalidates it. Create a new room; this beta does not restore matches.
 - **Free resources unavailable or billing required:** stop and review the account's eligibility and usage; do not silently upgrade to a paid plan.

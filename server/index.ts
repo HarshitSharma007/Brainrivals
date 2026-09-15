@@ -48,7 +48,7 @@ export interface GameServerOptions {
   revealMs?: number;
   countdownMs?: number;
   roomTtlMs?: number;
-  staticDir?: string;
+  staticDir?: string | false;
 }
 
 const CODE_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';

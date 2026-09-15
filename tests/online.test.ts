@@ -46,7 +46,7 @@ test('Render public URL is allowlisted without trusting arbitrary host headers',
   process.env.ALLOWED_ORIGINS = 'https://localhost';
   let server: Awaited<ReturnType<typeof createGameServer>> | undefined;
   try {
-    server = await createGameServer({ port: 0, host: '127.0.0.1' });
+    server = await createGameServer({ port: 0, host: '127.0.0.1', staticDir: false });
   } finally {
     if (previous === undefined) delete process.env.RENDER_EXTERNAL_URL; else process.env.RENDER_EXTERNAL_URL = previous;
     if (previousAllowlist === undefined) delete process.env.ALLOWED_ORIGINS; else process.env.ALLOWED_ORIGINS = previousAllowlist;
@@ -61,6 +61,27 @@ test('Render public URL is allowlisted without trusting arbitrary host headers',
 
 test('web hosting fails clearly when its build directory is absent', TEST_OPTIONS, async () => {
   await assert.rejects(createGameServer({ port: 0, staticDir: join(tmpdir(), 'brainrivals-missing', 'no-build') }), /Build the web app/);
+});
+
+test('room tests override SERVE_WEB while production still requires a web build', TEST_OPTIONS, async t => {
+  const directory = mkdtempSync(join(tmpdir(), 'brainrivals-before-build-'));
+  const previousDirectory = process.cwd();
+  const previousServeWeb = process.env.SERVE_WEB;
+  try {
+    process.chdir(directory);
+    process.env.SERVE_WEB = '1';
+    await assert.rejects(createGameServer({ port: 0, origins: [ORIGIN] }), /Build the web app/);
+    const fixture = await setup(t);
+    assert.deepEqual(await (await fetch(`${fixture.url}/health`)).json(), { ok: true });
+    assert.equal((await fetch(fixture.url)).status, 404);
+    const host = await fixture.client();
+    const guest = await fixture.client();
+    assert.ok(await pair(host, guest));
+  } finally {
+    process.chdir(previousDirectory);
+    if (previousServeWeb === undefined) delete process.env.SERVE_WEB; else process.env.SERVE_WEB = previousServeWeb;
+    rmSync(directory, { recursive: true, force: true });
+  }
 });
 
 // Record before connecting/emitting: state broadcasts can arrive before an acknowledgement.
@@ -150,6 +171,7 @@ async function denied(client: Client, event: string, ...args: unknown[]): Promis
 async function setup(t: TestContext, options: GameServerOptions = {}) {
   const server = await createGameServer({
     port: 0, host: '127.0.0.1', origins: [ORIGIN],
+    staticDir: false,
     roundMs: 3_000, revealMs: 40, countdownMs: 40, roomTtlMs: 60_000,
     ...options,
   });

@@ -27,7 +27,6 @@
     "@capacitor/core": "^7.4.0",
     "@capacitor/haptics": "^7.0.0",
     "@capacitor/preferences": "^7.0.0",
-    "brainrivals": "file:",
     "framer-motion": "^12.23.0",
     "lucide-react": "^0.468.0",
     "react": "^19.1.0",
